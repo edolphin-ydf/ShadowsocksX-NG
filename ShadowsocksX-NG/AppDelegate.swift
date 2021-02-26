@@ -228,7 +228,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         ProxyConfHelper.disableProxy()
     }
 
-    func applyConfig() {
+    public func applyConfig() {
         SyncSSLocal()
         
         let defaults = UserDefaults.standard
@@ -247,6 +247,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             }
         } else {
             ProxyConfHelper.disableProxy()
+        }
+    }
+
+    @objc public static func ApplyConfig() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            let ad = NSApplication.shared.delegate as! AppDelegate
+            ad.applyConfig()
         }
     }
 
