@@ -8,6 +8,7 @@
 
 #import "ProxyConfHelper.h"
 #import "proxy_conf_helper_version.h"
+#import "ShadowsocksX_NG-Swift.h"
 
 #define kShadowsocksHelper @"/Library/Application Support/ShadowsocksX-NG/proxy_conf_helper"
 
@@ -240,6 +241,17 @@ GCDWebServer *webServer = nil;
         return resp;
     }
      ];
+    
+    [webServer addHandlerForMethod:@"GET"
+                              path:@"/addPac"
+                      requestClass:[GCDWebServerRequest class]
+                      processBlock:^GCDWebServerResponse *(GCDWebServerRequest *request)
+     {
+        NSString* url = request.query[@"url"];
+        [FuncWrapperClass DynamicAddToPacFileWithUrl:url];
+        GCDWebServerDataResponse* resp = [GCDWebServerDataResponse responseWithStatusCode: 200];
+        return resp;
+    }];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     

@@ -197,3 +197,28 @@ func UpdatePACFromGFWList() {
             }
         }
 }
+
+@objc
+class FuncWrapperClass : NSObject {
+    @objc public static func DynamicAddToPacFile(url: String) {
+        var str = (try? String(contentsOfFile: PACUserRuleFilePath, encoding: String.Encoding.utf8)) ?? ""
+        str = str + "\n||" + url + "^";
+
+        do {
+            try str.data(using: String.Encoding.utf8)?.write(to: URL(fileURLWithPath: PACUserRuleFilePath))
+
+            if GeneratePACFile() {
+                // Popup a user notification
+                let notification = NSUserNotification()
+                notification.title = "PAC has been updated by User Rules.".localized
+                NSUserNotificationCenter.default
+                        .deliver(notification)
+            } else {
+                let notification = NSUserNotification()
+                notification.title = "It's failed to update PAC by User Rules.".localized
+                NSUserNotificationCenter.default
+                        .deliver(notification)
+            }
+        } catch {}
+    }
+}
