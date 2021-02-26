@@ -143,11 +143,11 @@ GCDWebServer *webServer = nil;
     //next two lines can open gcdwebserver and work around pac file
     NSString* PACFilePath = [self getPACFilePath];
     [self startPACServer: PACFilePath];
-    
+
     NSURL* url = [NSURL URLWithString: [self getHttpPACUrl]];
-    
+
     NSMutableArray* args = [@[@"--mode", @"auto", @"--pac-url", [url absoluteString]]mutableCopy];
-    
+
     [self addArguments4ManualSpecifyNetworkServices:args];
     [self addArguments4ManualSpecifyProxyExceptions:args];
     [self callHelper:args];
@@ -211,8 +211,12 @@ GCDWebServer *webServer = nil;
 
     NSString * address = @"localhost";
     int port = (short)[defaults integerForKey:@"PacServer.ListenPort"];
-    
-    return [NSString stringWithFormat:@"%@%@:%d%@",@"http://",address,port,routerPath];
+
+    // used for force reload
+    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+
+    return [NSString stringWithFormat:@"%@%@:%d%@?ts=%@",@"http://",address,port,routerPath,timeStampObj];
 }
 
 + (NSString*)getExternalPACUrl {
@@ -249,6 +253,7 @@ GCDWebServer *webServer = nil;
      {
         NSString* url = request.query[@"url"];
         [FuncWrapperClass DynamicAddToPacFileWithUrl:url];
+        [AppDelegate ApplyConfig];
         GCDWebServerDataResponse* resp = [GCDWebServerDataResponse responseWithStatusCode: 200];
         return resp;
     }];
